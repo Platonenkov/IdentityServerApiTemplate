@@ -12,19 +12,20 @@ namespace IdentityServerApiTemplate.Server.AppStart.SwaggerFilters
         /// <inheritdoc />
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (!(context.ApiDescription.ActionDescriptor is ControllerActionDescriptor controller_action_descriptor))
+            var controllerActionDescriptor = context.ApiDescription.ActionDescriptor as ControllerActionDescriptor;
+            if (controllerActionDescriptor == null)
             {
                 return;
             }
 
-            var action_name = controller_action_descriptor.ActionName;
-            if (action_name != "GetPaged")
+            var actionName = controllerActionDescriptor.ActionName;
+            if (actionName != "GetPaged")
             {
                 return;
             }
 
-            var resource_name = controller_action_descriptor.ControllerName;
-            operation.Summary = $"Returns paged list of the {resource_name} as IPagedList wrapped with OperationResult";
+            var resourceName = controllerActionDescriptor.ControllerName;
+            operation.Summary = $"Returns paged list of the {resourceName} as IPagedList wrapped with OperationResult";
         }
     }
 }

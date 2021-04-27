@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Calabonga.AspNetCore.Controllers;
-using Calabonga.AspNetCore.Controllers.Base;
+using Calabonga.AspNetCore.Controllers.Records;
 using Calabonga.Microservices.Core;
 using Calabonga.Microservices.Core.Exceptions;
 using Calabonga.OperationResults;
@@ -15,15 +15,7 @@ namespace IdentityServerApiTemplate.Server.Mediator.LogsWritable
     /// <summary>
     /// Request: Log edit
     /// </summary>
-    public class LogPutItemRequest : OperationResultRequestBase<LogViewModel>
-    {
-        public LogPutItemRequest(LogUpdateViewModel model)
-        {
-            Model = model;
-        }
-
-        public LogUpdateViewModel Model { get; }
-    }
+    public record LogPutItemRequest(LogUpdateViewModel Model) : OperationResultRequestBase<LogViewModel>;
 
     /// <summary>
     /// Request: Log creation
@@ -51,7 +43,7 @@ namespace IdentityServerApiTemplate.Server.Mediator.LogsWritable
                 operation.AddError(new MicroserviceNotFoundException(AppContracts.Exceptions.NotFoundException));
                 return operation;
             }
-            
+
             _mapper.Map(request.Model, entity);
 
             repository.Update(entity);

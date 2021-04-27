@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Calabonga.AspNetCore.Controllers;
-using Calabonga.AspNetCore.Controllers.Base;
+using Calabonga.AspNetCore.Controllers.Records;
 using Calabonga.Microservices.Core.Exceptions;
 using Calabonga.OperationResults;
 using Calabonga.UnitOfWork;
@@ -15,15 +15,7 @@ namespace IdentityServerApiTemplate.Server.Mediator.LogsWritable
     /// <summary>
     /// Request: Log delete
     /// </summary>
-    public class LogDeleteItemRequest : OperationResultRequestBase<LogViewModel>
-    {
-        public LogDeleteItemRequest(Guid id)
-        {
-            Id = id;
-        }
-
-        public Guid Id { get; }
-    }
+    public record LogDeleteItemRequest(Guid Id) : OperationResultRequestBase<LogViewModel>;
 
     /// <summary>
     /// Request: Log delete

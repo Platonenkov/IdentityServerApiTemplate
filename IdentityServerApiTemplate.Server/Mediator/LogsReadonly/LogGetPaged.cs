@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Calabonga.AspNetCore.Controllers;
-using Calabonga.AspNetCore.Controllers.Base;
+using Calabonga.AspNetCore.Controllers.Records;
 using Calabonga.Microservices.Core.QueryParams;
 using Calabonga.OperationResults;
 using Calabonga.UnitOfWork;
@@ -14,12 +14,7 @@ namespace IdentityServerApiTemplate.Server.Mediator.LogsReadonly
     /// <summary>
     /// Request for paged list of Logs
     /// </summary>
-    public class LogGetPagedRequest : OperationResultRequestBase<IPagedList<LogViewModel>>
-    {
-        public LogGetPagedRequest(PagedListQueryParams queryParams) => QueryParams = queryParams;
-
-        public PagedListQueryParams QueryParams { get; }
-    }
+    public record LogGetPagedRequest(PagedListQueryParams QueryParams) : OperationResultRequestBase<IPagedList<LogViewModel>>;
 
     /// <summary>
     /// Request for paged list of Logs
@@ -39,7 +34,7 @@ namespace IdentityServerApiTemplate.Server.Mediator.LogsReadonly
             CancellationToken cancellationToken)
         {
             var operation = OperationResult.CreateResult<IPagedList<LogViewModel>>();
-            
+
             var pagedList = await _unitOfWork.GetRepository<Log>()
                 .GetPagedListAsync(
                     pageIndex: request.QueryParams.PageIndex,

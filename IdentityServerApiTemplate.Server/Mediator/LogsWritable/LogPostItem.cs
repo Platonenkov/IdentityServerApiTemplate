@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Calabonga.AspNetCore.Controllers;
-using Calabonga.AspNetCore.Controllers.Base;
+using Calabonga.AspNetCore.Controllers.Records;
 using Calabonga.Microservices.Core;
 using Calabonga.Microservices.Core.Exceptions;
 using Calabonga.OperationResults;
@@ -16,15 +16,7 @@ namespace IdentityServerApiTemplate.Server.Mediator.LogsWritable
     /// <summary>
     /// Request: Log creation
     /// </summary>
-    public class LogPostItemRequest : OperationResultRequestBase<LogViewModel>
-    {
-        public LogPostItemRequest(LogCreateViewModel model)
-        {
-            Model = model;
-        }
-
-        public LogCreateViewModel Model { get; }
-    }
+    public record LogPostItemRequest(LogCreateViewModel Model) : OperationResultRequestBase<LogViewModel>;
 
     /// <summary>
     /// Request: Log creation
@@ -55,7 +47,7 @@ namespace IdentityServerApiTemplate.Server.Mediator.LogsWritable
                 operation.AddError(new MicroserviceUnauthorizedException(AppContracts.Exceptions.MappingException));
                 return operation;
             }
-            
+
             await _unitOfWork.GetRepository<Log>().InsertAsync(entity, cancellationToken);
             await _unitOfWork.SaveChangesAsync();
 

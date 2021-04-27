@@ -18,34 +18,59 @@
 // Also, support two type Authentications: Cookie and Bearer.
 // ---------------------------------------
 
-using IdentityServerApiTemplate.Data.DatabaseInitialization;
-using IdentityServerApiTemplate.Entities.Core;
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
+using Serilog;
+using Serilog.Events;
+using System.Threading.Tasks;
+using IdentityServerApiTemplate.Data.DatabaseInitialization;
+using IdentityServerApiTemplate.Entities.Core;
 
 namespace IdentityServerApiTemplate.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            var webHost = CreateHostBuilder(args).Build();
-            using (var scope = webHost.Services.CreateScope())
-            {
-                DatabaseInitializer.Seed(scope.ServiceProvider);
-            }
+            Log.Logger = new LoggerConfiguration()
+               .MinimumLevel.Debug()
+               .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+               .Enrich.FromLogContext()
+               .WriteTo.Console()
+               .CreateLogger();
 
-            Console.Title = $"{AppData.ServiceName} v.{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}";
-            webHost.Run();
+            try
+            {
+                var webHost = CreateHostBuilder(args).Build();
+                using (var scope = webHost.Services.CreateScope())
+                {
+                    DatabaseInitializer.Seed(scope.ServiceProvider);
+                }
+
+                Console.Title = $"{AppData.ServiceName} v.{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}";
+                await webHost.RunAsync();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedly");
+                return 1;
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+               .UseSerilog()
+               .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
     }
 }
+
